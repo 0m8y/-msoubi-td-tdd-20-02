@@ -62,16 +62,8 @@ class Panier:
         self.articles = []
         self.reduction = None
         self.stockHistory = StockHistory()
+        self.coupons = {}
 
-    def getStockHistory(self):
-        return self.stockHistory
-
-    def displayStockOnDate(self, date):
-        self.stockHistory.displayStock(date)
-
-    def displayStockEvolution(self, startDate, endDate):
-        self.stockHistory.displayStockEvolution(startDate, endDate)
-    
     def getTotal(self):
         total = 0
         for article in self.articles:
@@ -115,3 +107,13 @@ class Panier:
             raise ValueError("Une réduction a déjà été appliquée.")
         else:
             self.reduction = reduction
+
+    def getStockHistory(self):
+        return self.stockHistory
+
+    def displayStockOnDate(self, date):
+        self.stockHistory.displayStock(date)
+
+    def displayStockEvolution(self, startDate, endDate):
+        self.stockHistory.displayStockEvolution(startDate, endDate)
+    
