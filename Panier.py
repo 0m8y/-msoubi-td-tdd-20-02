@@ -73,7 +73,20 @@ class Panier:
         total = 0
         for article in self.articles:
             if not article.isExpired(datetime.now().strftime("%Y-%m-%d")):
-                total += article.getPrice() * article.getQuantity()
+                isReduced = False
+                article_total = article.getPrice() * article.getQuantity()
+                for coupon in self.coupons:
+                    if coupon.article == article.getName():
+                        isReduced = True
+                        article_total -= article.getQuantity() * (article.getPrice() * (coupon.reduction / 100))
+                        if article_total < 0:
+                            raise ValueError(f"Le prix de l'article {article.getName()} remisé ne peut pas être négatif.")
+                        break
+                total += article_total
+                if isReduced:
+                    print(f"{article.getName()} - {str(article.getPrice())}€ => {str(article_total / article.getQuantity())}€ - x{str(article.getQuantity())}")
+                else:
+                    print(f"{article.getName()} - {str(article.getPrice())}€ - x{str(article.getQuantity())}")
         if self.reduction is not None:
             total -= total * (self.reduction / 100)
         return total
