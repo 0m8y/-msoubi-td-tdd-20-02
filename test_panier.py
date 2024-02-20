@@ -155,3 +155,13 @@ def test_display_discounts(stock_history, capsys):
     captured = capsys.readouterr()
     assert "pasta - 2.5€ => 1.25€ - x2" in captured.out
 
+def test_display_total(stock_history, capsys):
+    assert stock_history.getTotal() == 10
+    captured = capsys.readouterr()
+    assert "milk - 1€ - x10" in captured.out
+
+    stock_history.addArticle("pasta", 2.5, 2, datetime.now().strftime("%Y-%m-%d"))
+
+    assert stock_history.getTotal() == 15
+    captured = capsys.readouterr()
+    assert "pasta - 2.5€ - x2" in captured.out
