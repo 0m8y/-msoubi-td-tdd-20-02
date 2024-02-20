@@ -146,5 +146,12 @@ def test_display_discounts(stock_history, capsys):
     stock_history.addCoupon("CODE10", 10, "milk")
     assert stock_history.getTotal() == 9
     captured = capsys.readouterr()
-    assert "Milk - 1€ => 0.90€ - x10" in captured.out
+    assert "milk - 1€ => 0.9€ - x10" in captured.out
+
+    stock_history.addArticle("pasta", 2.5, 2, datetime.now().strftime("%Y-%m-%d"))
+
+    stock_history.addCoupon("PASTA50", 50, "pasta")
+    assert stock_history.getTotal() == 11.5
+    captured = capsys.readouterr()
+    assert "pasta - 2.5€ => 1.25€ - x2" in captured.out
 
