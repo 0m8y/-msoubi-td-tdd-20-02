@@ -6,9 +6,9 @@ import pytest
 @pytest.fixture
 def panier():
     panier = Panier()
-    panier.addArticle("milk", 1, 1, "2023-01-01")
-    panier.addArticle("pasta", 2, 1, "2023-01-01")
-    panier.addArticle("beef", 12, 1, "2023-01-01")
+    panier.addArticle("milk", 1, 1, "2035-01-01")
+    panier.addArticle("pasta", 2, 1, "2035-01-01")
+    panier.addArticle("beef", 12, 1, "2035-01-01")
     return panier
 
 def test_constructor(panier):
@@ -28,12 +28,12 @@ def test_remove_article(panier):
 
 def test_add_article(panier):
     assert len(panier.getArticles()) == 3
-    panier.addArticle("chocolat", 1, 1, "2023-01-01")
+    panier.addArticle("chocolat", 1, 1, "2035-01-01")
     assert len(panier.getArticles()) == 4
 
 def test_get_total(panier):
     assert panier.getTotal() == 15
-    panier.addArticle("chocolat", 25, 1, "2023-01-01")
+    panier.addArticle("chocolat", 25, 1, "2035-01-01")
     assert panier.getTotal() == 40
 
 def test_reduction(panier):
@@ -56,13 +56,13 @@ def test_reduction(panier):
     assert panier.getTotal() == 7.5
 
 def test_article_expiration():
-    article = Article("yogurt", 3, 10, "2023-01-01")
-    assert article.isExpired("2023-01-02")
-    assert not article.isExpired("2022-12-31")
+    article = Article("yogurt", 3, 10, "2035-01-01")
+    assert article.isExpired("2035-01-02")
+    assert not article.isExpired("2020-12-31")
 
 def test_article_quantity_management():
     panier = Panier()
-    panier.addArticle("bread", 1, 5, "2024-01-01")
+    panier.addArticle("bread", 1, 5, "2035-01-01")
     
     panier.removeArticle("bread", 3)
     assert panier.getArticles()[0].getQuantity() == 2
@@ -71,7 +71,7 @@ def test_article_quantity_management():
         panier.removeArticle("bread", 3)
     assert str(e.value) == "La quantité en stock ne peut pas être négative."
     
-    panier.addArticle("bread", 1, 2, "2024-01-01")
+    panier.addArticle("bread", 1, 2, "2035-01-01")
     assert panier.getArticles()[0].getQuantity() == 4
 
 @pytest.fixture
@@ -102,18 +102,18 @@ def test_display_stock_evolution(stock_history, capsys):
     assert "bread" in captured.out
     
 def test_add_product_updates_stock_history(stock_history):
-    stock_history.addArticle("cheese", 2.5, 20, "2024-01-01")
+    stock_history.addArticle("cheese", 2.5, 20, "2035-01-01")
     assert any(change for change in stock_history.getStockHistory().changes if change["name"] == "cheese" and change["type"] == "add" and change["quantity"] == 20)
     assert any(article for article in stock_history.getArticles() if article.getName() == "cheese" and article.getQuantity() == 20)
 
 def test_remove_product_updates_stock_history(stock_history):
-    stock_history.addArticle("water", 2, 10, "2024-01-01")
+    stock_history.addArticle("water", 2, 10, "2035-01-01")
     stock_history.removeArticle("water", 5)
     assert any(change for change in stock_history.getStockHistory().changes if change["name"] == "water" and change["type"] == "remove" and change["quantity"] == 5)
     assert any(article for article in stock_history.getArticles() if article.getName() == "water" and article.getQuantity() == 5)
 
 def test_cannot_reduce_stock_into_negative(stock_history):
-    stock_history.addArticle("juice", 1.0, 5, "2024-01-01")
+    stock_history.addArticle("juice", 1.0, 5, "2035-01-01")
     with pytest.raises(ValueError) as e:
         stock_history.removeArticle("juice", 10)
     assert str(e.value) == "La quantité en stock ne peut pas être négative."

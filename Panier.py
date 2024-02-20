@@ -26,7 +26,6 @@ class StockHistory:
             if date_debut_dt <= change["date"] <= date_fin_dt:
                 print(change)
 
-
 class Article:
     def __init__(self, name, price, quantity, expirationDate):
         self.name = name
@@ -57,17 +56,24 @@ class Article:
     def increaseStock(self, quantity):
         self.quantity += quantity
 
+class Coupon:
+    def __init__(self, code, reduction, article=None):
+        self.code = code
+        self.reduction = reduction
+        self.article = article
+
 class Panier:
     def __init__(self):
         self.articles = []
         self.reduction = None
         self.stockHistory = StockHistory()
-        self.coupons = {}
+        self.coupons = []
 
     def getTotal(self):
         total = 0
         for article in self.articles:
-            total += article.getPrice() * article.getQuantity()
+            if not article.isExpired(datetime.now().strftime("%Y-%m-%d")):
+                total += article.getPrice() * article.getQuantity()
         if self.reduction is not None:
             total -= total * (self.reduction / 100)
         return total
@@ -107,6 +113,16 @@ class Panier:
             raise ValueError("Une réduction a déjà été appliquée.")
         else:
             self.reduction = reduction
+
+    def addCoupon(self, name, reduction, article=None):
+        if reduction <= 0:
+            raise ValueError("La réduction doit être supérieure à 0.")
+        if article is None:
+            if self.reduction is not None:
+                raise ValueError("Une réduction a déjà été appliquée.")
+            self.reduction = Coupon(name, reduction)
+        if any(coupon for coupon in self.coupons if coupon.name == name):
+            raise ValueError("Un coupon avec ce code existe déjà.")
 
     def getStockHistory(self):
         return self.stockHistory
