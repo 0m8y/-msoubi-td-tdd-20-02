@@ -80,7 +80,7 @@ def stock_history():
     today = datetime.now().strftime("%Y-%m-%d")
     yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     panier.addArticle("milk", 1, 10, today)
-    panier.addArticle("bread", 0.5, 5, yesterday)
+    panier.addArticle("bread", 1, 5, yesterday)
     return panier
 
 def test_update_stock_history(stock_history):
@@ -122,3 +122,10 @@ def test_cannot_reduce_stock_into_negative(stock_history):
 def test_isExpired_checks_for_expired_products():
     article = Article("expiredMilk", 1.0, 1, "2020-01-01")
     assert article.isExpired(datetime.now().strftime("%Y-%m-%d")) == True
+
+def test_display_discounts(stock_history, capsys):
+    panier.addCoupon("CODE10", 10, "milk")
+    assert stock_history.getTotal() == 9
+    captured = capsys.readouterr()
+    assert "Milk - 1€ => 0.90€ - x10" in captured.out
+
