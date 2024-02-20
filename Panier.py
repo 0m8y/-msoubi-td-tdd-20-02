@@ -57,8 +57,8 @@ class Article:
         self.quantity += quantity
 
 class Coupon:
-    def __init__(self, code, reduction, article=None):
-        self.code = code
+    def __init__(self, name, reduction, article=None):
+        self.name = name
         self.reduction = reduction
         self.article = article
 
@@ -122,7 +122,10 @@ class Panier:
                 raise ValueError("Une réduction a déjà été appliquée.")
             self.reduction = Coupon(name, reduction)
         if any(coupon for coupon in self.coupons if coupon.name == name):
-            raise ValueError("Un coupon avec ce code existe déjà.")
+            raise ValueError("Ce coupon a déjà été appliqué a un article.")
+        if any(coupon for coupon in self.coupons if coupon.article == article):
+            raise ValueError("L'article possède déjà un coupon.")
+        self.coupons.append(Coupon(name, reduction, article))
 
     def getStockHistory(self):
         return self.stockHistory
