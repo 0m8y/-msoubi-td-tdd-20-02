@@ -123,8 +123,27 @@ def test_isExpired_checks_for_expired_products():
     article = Article("expiredMilk", 1.0, 1, "2020-01-01")
     assert article.isExpired(datetime.now().strftime("%Y-%m-%d")) == True
 
+def test_add_coupon(stock_history, capsys):
+    with pytest.raises(ValueError) as e:
+        stock_history.addCoupon("ZERO", 0, "milk")
+    assert str(e.value) == "La réduction doit être supérieure à 0."
+    
+    with pytest.raises(ValueError) as e:
+        stock_history.addCoupon("CODE NEGATIVE", -5, "milk")
+    assert str(e.value) == "La réduction doit être supérieure à 0."
+
+    stock_history.addCoupon("CODE10", 10, "milk")
+
+    with pytest.raises(ValueError) as e:
+        stock_history.addCoupon("CODE10", -5, "bread")
+    assert str(e.value) == "Ce coupon a déjà été appliqué a un article."
+
+    with pytest.raises(ValueError) as e:
+        stock_history.addCoupon("NEWCODE20", -5, "milk")
+    assert str(e.value) == "L'article possède déjà un coupon."
+
 def test_display_discounts(stock_history, capsys):
-    panier.addCoupon("CODE10", 10, "milk")
+    stock_history.addCoupon("CODE10", 10, "milk")
     assert stock_history.getTotal() == 9
     captured = capsys.readouterr()
     assert "Milk - 1€ => 0.90€ - x10" in captured.out
