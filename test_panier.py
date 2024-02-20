@@ -101,3 +101,24 @@ def test_display_stock_evolution(stock_history, capsys):
     assert "milk" in captured.out
     assert "bread" in captured.out
     
+def test_add_product_updates_stock_history(stock_history):
+    stock_history.addArticle("cheese", 2.5, 20, "2024-01-01")
+    assert any(change for change in stock_history.getStockHistory().changes if change["name"] == "cheese" and change["type"] == "add" and change["quantity"] == 20)
+    assert any(article for article in stock_history.getArticles() if article.getName() == "cheese" and article.getQuantity() == 20)
+
+def test_remove_product_updates_stock_history(stock_history):
+    stock_history.addArticle("water", 2, 10, "2024-01-01")
+    stock_history.removeArticle("water", 5)
+    assert any(change for change in stock_history.getStockHistory().changes if change["name"] == "water" and change["type"] == "remove" and change["quantity"] == 5)
+    assert any(article for article in stock_history.getArticles() if article.getName() == "water" and article.getQuantity() == 5)
+
+def test_cannot_reduce_stock_into_negative(stock_history):
+    stock_history.addArticle("juice", 1.0, 5, "2024-01-01")
+    with pytest.raises(ValueError) as e:
+        stock_history.removeArticle("juice", 10)
+    assert str(e.value) == "La quantité en stock ne peut pas être négative."
+    assert any(article for article in stock_history.getArticles() if article.getName() == "juice" and article.getQuantity() == 5)
+
+def test_isExpired_checks_for_expired_products():
+    article = Article("expiredMilk", 1.0, 1, "2020-01-01")
+    assert article.isExpired(datetime.now().strftime("%Y-%m-%d")) == True
